@@ -3,6 +3,7 @@ package br.com.githubrepos.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private fun initRecycler() {
         with(binding) {
             rvRepositoriesList.setHasFixedSize(true)
+            rvRepositoriesList.isNestedScrollingEnabled = false
             layoutManager = LinearLayoutManager(this@MainActivity)
             rvRepositoriesList.layoutManager = layoutManager
             repositoriesListAdapter = RepositoriesListAdapter(this@MainActivity)
@@ -43,23 +45,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
-        binding.rvRepositoriesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    val visibleItemCount = layoutManager.childCount
-                    val firstVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
-                    val totalItems = repositoriesListAdapter.itemCount
+        with(binding) {
+            nsParentView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+                val viewBottom = nsParentView.getChildAt(nsParentView.childCount - 1).bottom
+                val diff = viewBottom - (nsParentView.height + scrollY)
 
+                if (diff == 0) {
                     if (!isLoading) {
-                        if ((visibleItemCount + firstVisibleItem) >= totalItems) {
-                            searchRepositories()
-                        }
+                        searchRepositories()
                     }
                 }
-
-                super.onScrolled(recyclerView, dx, dy)
-            }
-        })
+            })
+        }
     }
 
     private fun setObservable() {
