@@ -2,18 +2,18 @@ package br.com.githubrepos.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import br.com.githubrepos.dto.RepositoryData
+import br.com.githubrepos.dto.GitHubRepositoryResponse
 import br.com.githubrepos.repository.GitHubRepository
 
 class GitHubViewModel : ViewModel() {
 
     private val gitHubRepository = GitHubRepository()
 
-    fun searchGitHubRepositories() {
-        gitHubRepository.getGitHubRepositories()
+    fun searchGitHubRepositories(pageNumber: Int) {
+        gitHubRepository.getGitHubRepositories(pageNumber)
     }
 
-    fun getGitHubRepositories(): LiveData<List<RepositoryData>> {
+    fun getGitHubRepositories(): LiveData<GitHubRepositoryResponse> {
         return gitHubRepository.repositories
     }
 }

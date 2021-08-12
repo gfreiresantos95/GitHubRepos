@@ -3,7 +3,6 @@ package br.com.githubrepos.repository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import br.com.githubrepos.dto.GitHubRepositoryResponse
-import br.com.githubrepos.dto.RepositoryData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -11,10 +10,10 @@ import retrofit2.Response
 class GitHubRepository {
 
     private val gitHubService = RetrofitConfig.getGitHubService()
-    var repositories = MutableLiveData<List<RepositoryData>>()
+    var repositories = MutableLiveData<GitHubRepositoryResponse>()
 
-    fun getGitHubRepositories() {
-        val call = gitHubService.getGitHubRepositories()
+    fun getGitHubRepositories(pageNumber: Int) {
+        val call = gitHubService.getGitHubRepositories(pageNumber)
 
         call.enqueue(object : Callback<GitHubRepositoryResponse> {
             override fun onResponse(
@@ -23,7 +22,7 @@ class GitHubRepository {
             ) {
                 Log.i("MainRepository", response.message())
                 if (response.isSuccessful) {
-                    repositories.value = response.body()?.items
+                    repositories.value = response.body()
                 }
             }
 
