@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import br.com.githubrepos.dto.GitHubRepositoryResponse
 import br.com.githubrepos.repository.GitHubRepository
 
-class GitHubViewModel : ViewModel() {
+class MainActivityViewModel : ViewModel() {
 
     private val gitHubRepository = GitHubRepository()
 

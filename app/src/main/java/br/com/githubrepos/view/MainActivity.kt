@@ -3,18 +3,19 @@ package br.com.githubrepos.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import br.com.githubrepos.databinding.ActivityMainBinding
+import br.com.githubrepos.dto.RepositoryData
 import br.com.githubrepos.view.adapter.RepositoriesListAdapter
-import br.com.githubrepos.viewmodel.GitHubViewModel
+import br.com.githubrepos.viewmodel.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var gitHubViewModel: GitHubViewModel
+    private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var repositoriesListAdapter: RepositoriesListAdapter
     private var page = 1
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        gitHubViewModel = ViewModelProvider(this).get(GitHubViewModel::class.java)
+        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         initRecycler()
         setListeners()
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setObservable() {
-        gitHubViewModel.getGitHubRepositories().observe(this, {
+        mainActivityViewModel.getGitHubRepositories().observe(this, {
             isLoading = false
 
             if (page < it.totalCount) {
@@ -68,8 +69,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (it.items.isNotEmpty()) {
-                repositoriesListAdapter.add(it.items)
-                binding.loadingProgress.visibility = View.GONE
+                showList(it.items)
+            } else {
+                showError()
             }
         })
     }
@@ -77,6 +79,16 @@ class MainActivity : AppCompatActivity() {
     private fun searchRepositories() {
         isLoading = true
         binding.loadingProgress.visibility = View.VISIBLE
-        gitHubViewModel.searchGitHubRepositories(page)
+        mainActivityViewModel.searchGitHubRepositories(page)
+    }
+
+    private fun showList(items: ArrayList<RepositoryData>) {
+        repositoriesListAdapter.add(items)
+        binding.loadingProgress.visibility = View.GONE
+    }
+
+    private fun showError() {
+        Toast.makeText(this@MainActivity, "Houve erro!", Toast.LENGTH_SHORT).show()
+        binding.loadingProgress.visibility = View.GONE
     }
 }
